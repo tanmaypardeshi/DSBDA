@@ -1,0 +1,258 @@
+> # Perform the following operations using R/Python on the Facebook Metrics Dataset
+> # Create data subsets
+> # Merge Data
+> # Sort Data
+> # Transposing Data
+> # Melting Data to long format
+> # Casting data to wide format
+> 
+> # load library reshape2
+> library(reshape2)   
+> 
+> # get working directory
+> getwd()
+[1] "/home/tanmay"
+> 
+> # importing the facebook metrics dataset without first line as header
+> df <- read.csv("/home/tanmay/Downloads/fb.csv", header=TRUE, sep=";")
+> 
+> # print dataframe dimensions
+> print(dim(df))     
+[1] 500  19
+> 
+> # print column names
+> print(names(df))    
+ [1] "Page.total.likes"                                                    "Type"                                                               
+ [3] "Category"                                                            "Post.Month"                                                         
+ [5] "Post.Weekday"                                                        "Post.Hour"                                                          
+ [7] "Paid"                                                                "Lifetime.Post.Total.Reach"                                          
+ [9] "Lifetime.Post.Total.Impressions"                                     "Lifetime.Engaged.Users"                                             
+[11] "Lifetime.Post.Consumers"                                             "Lifetime.Post.Consumptions"                                         
+[13] "Lifetime.Post.Impressions.by.people.who.have.liked.your.Page"        "Lifetime.Post.reach.by.people.who.like.your.Page"                   
+[15] "Lifetime.People.who.have.liked.your.Page.and.engaged.with.your.post" "comment"                                                            
+[17] "like"                                                                "share"                                                              
+[19] "Total.Interactions"                                                 
+> 
+> # Create data subsets
+> subset1 <- df[c("Page.total.likes", "Type", "Category", "Post.Month", 
++                "Post.Weekday" ,"Post.Hour", "Paid")]
+> head(subset1)
+  Page.total.likes   Type Category Post.Month Post.Weekday Post.Hour Paid
+1           139441  Photo        2         12            4         3    0
+2           139441 Status        2         12            3        10    0
+3           139441  Photo        3         12            3         3    0
+4           139441  Photo        2         12            2        10    1
+5           139441  Photo        2         12            2         3    0
+6           139441 Status        2         12            1         9    0
+> dim(subset1)
+[1] 500   7
+> 
+> subset2 <- df[c("Page.total.likes", "Type", "Category",
++                 "comment", "like", "share", "Total.Interactions")]
+> head(subset2)
+  Page.total.likes   Type Category comment like share Total.Interactions
+1           139441  Photo        2       4   79    17                100
+2           139441 Status        2       5  130    29                164
+3           139441  Photo        3       0   66    14                 80
+4           139441  Photo        2      58 1572   147               1777
+5           139441  Photo        2      19  325    49                393
+6           139441 Status        2       1  152    33                186
+> dim(subset2)
+[1] 500   7
+> 
+> # Merging dataframe
+> merged <- merge(subset1, subset2, by="Category")
+> head(merged)
+  Category Page.total.likes.x Type.x Post.Month Post.Weekday Post.Hour Paid Page.total.likes.y Type.y comment like share Total.Interactions
+1        1             138185  Photo         11            3        11    1             138185  Photo       8  101    14                123
+2        1             138185  Photo         11            3        11    1             136013  Photo       6   76    14                 96
+3        1             138185  Photo         11            3        11    1             138185  Photo       2   60     7                 69
+4        1             138185  Photo         11            3        11    1             138895  Photo      16   76     8                100
+5        1             138185  Photo         11            3        11    1             138353   Link       6   18     8                 32
+6        1             138185  Photo         11            3        11    1             135195  Photo       2   30     6                 38
+> dim(merged)
+[1] 87150    13
+> 
+> # Sort dataframe
+> sortdf <- df[order(df$Category, df$Post.Month),]
+> head(sortdf)
+    Page.total.likes  Type Category Post.Month Post.Weekday Post.Hour Paid Lifetime.Post.Total.Reach Lifetime.Post.Total.Impressions
+477            86909 Photo        1          1            6        10    1                     37088                           10966
+478            86909  Link        1          1            6         4    0                     39600                            7927
+482            86491  Link        1          1            4         4    1                      4938                            7910
+486            86491  Link        1          1            2         2    0                      5168                            8371
+493            85979  Link        1          1            5        11    0                     45920                            5808
+498            81370 Photo        1          1            5         2    0                      3778                            7216
+    Lifetime.Engaged.Users Lifetime.Post.Consumers Lifetime.Post.Consumptions Lifetime.Post.Impressions.by.people.who.have.liked.your.Page
+477                   2728                    2288                       3183                                                        66311
+478                    572                     496                        581                                                        12522
+482                     66                      63                         70                                                         6625
+486                     66                      59                         71                                                         7041
+493                    753                     655                        763                                                        15766
+498                    625                     572                        795                                                         4742
+    Lifetime.Post.reach.by.people.who.like.your.Page Lifetime.People.who.have.liked.your.Page.and.engaged.with.your.post comment like share
+477                                            34352                                                                2021       7  579    47
+478                                             8176                                                                 167       1  101     5
+482                                             3804                                                                  59       0    5     2
+486                                             3996                                                                  58       0   12     2
+493                                            10720                                                                 220       0  128     9
+498                                             2388                                                                 363       4   93    18
+    Total.Interactions
+477                633
+478                107
+482                  7
+486                 14
+493                137
+498                115
+> dim(sortdf)
+[1] 500  19
+> 
+> # Transpose of dataframe
+> transposedf = t(df)
+> head(transposedf)
+                 [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]     [,8]     [,9]     [,10]    [,11]    [,12]    [,13]    [,14]   
+Page.total.likes "139441" "139441" "139441" "139441" "139441" "139441" "139441" "139441" "139441" "139441" "139441" "139441" "139441" "139441"
+Type             "Photo"  "Status" "Photo"  "Photo"  "Photo"  "Status" "Photo"  "Photo"  "Status" "Photo"  "Status" "Photo"  "Photo"  "Photo" 
+                 [,15]    [,16]    [,17]    [,18]    [,19]    [,20]    [,21]    [,22]    [,23]    [,24]    [,25]    [,26]    [,27]    [,28]   
+Page.total.likes "138414" "138414" "138414" "138414" "138414" "138414" "138414" "138414" "138414" "138414" "138414" "138458" "138458" "138458"
+Type             "Photo"  "Status" "Photo"  "Photo"  "Status" "Photo"  "Photo"  "Photo"  "Link"   "Photo"  "Status" "Status" "Status" "Photo" 
+                 [,29]    [,30]    [,31]    [,32]    [,33]    [,34]    [,35]    [,36]    [,37]    [,38]    [,39]    [,40]    [,41]    [,42]   
+Page.total.likes "138895" "138895" "138895" "138895" "138895" "138895" "138895" "138895" "138895" "138895" "138895" "138895" "138895" "138895"
+Type             "Photo"  "Video"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Photo"  "Status" "Link"  
+                 [,43]    [,44]    [,45]    [,46]    [,47]    [,48]    [,49]    [,50]    [,51]    [,52]    [,53]    [,54]    [,55]    [,56]   
+Page.total.likes "138353" "138353" "138353" "138353" "138353" "138353" "138353" "138353" "138353" "138329" "138329" "138329" "138329" "138329"
+Type             "Photo"  "Link"   "Photo"  "Link"   "Status" "Link"   "Photo"  "Link"   "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Video" 
+                 [,57]    [,58]    [,59]    [,60]    [,61]    [,62]    [,63]    [,64]    [,65]    [,66]    [,67]    [,68]    [,69]    [,70]   
+Page.total.likes "138329" "138329" "138329" "138329" "138185" "138185" "138185" "138185" "138185" "138185" "138185" "138185" "138185" "137893"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,71]    [,72]    [,73]    [,74]    [,75]    [,76]    [,77]    [,78]    [,79]    [,80]    [,81]    [,82]    [,83]    [,84]   
+Page.total.likes "137893" "137893" "137893" "137893" "137893" "137893" "137893" "137177" "137177" "137177" "137177" "137177" "137177" "137177"
+Type             "Photo"  "Video"  "Status" "Photo"  "Video"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Photo"  "Photo"  "Photo" 
+                 [,85]    [,86]    [,87]    [,88]    [,89]    [,90]    [,91]    [,92]    [,93]    [,94]    [,95]    [,96]    [,97]    [,98]   
+Page.total.likes "137177" "137177" "137177" "137177" "137177" "137059" "137059" "137059" "137059" "137059" "137059" "137059" "137059" "137059"
+Type             "Status" "Photo"  "Link"   "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,99]    [,100]   [,101]   [,102]   [,103]   [,104]   [,105]   [,106]   [,107]   [,108]   [,109]   [,110]   [,111]   [,112]  
+Page.total.likes "137020" "137020" "137020" "137020" "137020" "137020" "137020" "137020" "137020" "136736" "136736" "136736" "136736" "136736"
+Type             "Status" "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Photo"  "Status" "Photo"  "Photo" 
+                 [,113]   [,114]   [,115]   [,116]   [,117]   [,118]   [,119]   [,120]   [,121]   [,122]   [,123]   [,124]   [,125]   [,126]  
+Page.total.likes "136736" "136642" "136642" "136642" "136642" "136642" "136642" "136393" "136393" "136393" "136393" "136393" "136393" "136393"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,127]   [,128]   [,129]   [,130]   [,131]   [,132]   [,133]   [,134]   [,135]   [,136]   [,137]   [,138]   [,139]   [,140]  
+Page.total.likes "136393" "136393" "136393" "136393" "136393" "136393" "136393" "136393" "136393" "136393" "136393" "136013" "136013" "136013"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Link"   "Photo"  "Status" "Photo" 
+                 [,141]   [,142]   [,143]   [,144]   [,145]   [,146]   [,147]   [,148]   [,149]   [,150]   [,151]   [,152]   [,153]   [,154]  
+Page.total.likes "136013" "136013" "136013" "136013" "136013" "136013" "136013" "135713" "135713" "135713" "135713" "135713" "135713" "135713"
+Type             "Link"   "Status" "Status" "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Link"   "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,155]   [,156]   [,157]   [,158]   [,159]   [,160]   [,161]   [,162]   [,163]   [,164]   [,165]   [,166]   [,167]   [,168]  
+Page.total.likes "135713" "135700" "135700" "135700" "135700" "135617" "135617" "135617" "135617" "135617" "135428" "135428" "135428" "135428"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,169]   [,170]   [,171]   [,172]   [,173]   [,174]   [,175]   [,176]   [,177]   [,178]   [,179]   [,180]   [,181]   [,182]  
+Page.total.likes "135428" "135428" "135195" "135195" "135195" "135195" "135195" "135195" "135195" "135195" "135195" "135195" "134879" "134879"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Photo"  "Photo"  "Status" "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Photo" 
+                 [,183]   [,184]   [,185]   [,186]   [,187]   [,188]   [,189]   [,190]   [,191]   [,192]   [,193]   [,194]   [,195]   [,196]  
+Page.total.likes "134879" "134879" "134879" "134879" "134879" "134879" "134879" "133679" "133679" "133679" "133679" "133594" "133594" "133594"
+Type             "Photo"  "Video"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,197]   [,198]   [,199]   [,200]   [,201]   [,202]   [,203]   [,204]   [,205]   [,206]   [,207]   [,208]   [,209]   [,210]  
+Page.total.likes "133594" "133594" "133451" "132817" "132817" "132817" "132817" "132817" "132817" "132201" "132201" "132201" "132201" "132201"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,211]   [,212]   [,213]   [,214]   [,215]   [,216]   [,217]   [,218]   [,219]   [,220]   [,221]   [,222]   [,223]   [,224]  
+Page.total.likes "132201" "132201" "132201" "132201" "132201" "131956" "131956" "131956" "131956" "131956" "131956" "131956" "131808" "131808"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Status"
+                 [,225]   [,226]   [,227]   [,228]   [,229]   [,230]   [,231]   [,232]   [,233]   [,234]   [,235]   [,236]   [,237]   [,238]  
+Page.total.likes "131808" "131808" "131728" "131728" "131728" "131630" "131630" "131630" "131630" "131630" "131630" "131300" "131300" "131300"
+Type             "Photo"  "Status" "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Photo"  "Photo"  "Status" "Photo"  "Photo" 
+                 [,239]   [,240]   [,241]   [,242]   [,243]   [,244]   [,245]   [,246]   [,247]   [,248]   [,249]   [,250]   [,251]   [,252]  
+Page.total.likes "131300" "130791" "130791" "130791" "130791" "130791" "130791" "130791" "130791" "129600" "129600" "129600" "129600" "129600"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Video"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,253]   [,254]   [,255]   [,256]   [,257]   [,258]   [,259]   [,260]   [,261]   [,262]   [,263]   [,264]   [,265]   [,266]  
+Page.total.likes "129600" "129600" "129600" "129600" "129600" "129600" "129600" "129600" "129600" "129600" "128032" "128032" "128032" "128032"
+Type             "Photo"  "Status" "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,267]   [,268]   [,269]   [,270]   [,271]   [,272]   [,273]   [,274]   [,275]   [,276]   [,277]   [,278]   [,279]   [,280]  
+Page.total.likes "128032" "128032" "128032" "128032" "128032" "128032" "127082" "126424" "126424" "126424" "126424" "126424" "126345" "126345"
+Type             "Photo"  "Status" "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Photo"  "Video"  "Photo"  "Photo" 
+                 [,281]   [,282]   [,283]   [,284]   [,285]   [,286]   [,287]   [,288]   [,289]   [,290]   [,291]   [,292]   [,293]   [,294]  
+Page.total.likes "126345" "126345" "126345" "126141" "126141" "126141" "126141" "126141" "126141" "125612" "125612" "125612" "125612" "125612"
+Type             "Photo"  "Photo"  "Status" "Photo"  "Photo"  "Status" "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,295]   [,296]   [,297]   [,298]   [,299]   [,300]   [,301]   [,302]   [,303]   [,304]   [,305]   [,306]   [,307]   [,308]  
+Page.total.likes "125612" "125612" "125612" "125612" "125612" "124940" "124940" "124940" "124940" "124940" "124940" "124940" "124940" "124940"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,309]   [,310]   [,311]   [,312]   [,313]   [,314]   [,315]   [,316]   [,317]   [,318]   [,319]   [,320]   [,321]   [,322]  
+Page.total.likes "124940" "124940" "124940" "124940" "124940" "124940" "124940" "124940" "123047" "123047" "123047" "123047" "123047" "123047"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,323]   [,324]   [,325]   [,326]   [,327]   [,328]   [,329]   [,330]   [,331]   [,332]   [,333]   [,334]   [,335]   [,336]  
+Page.total.likes "123047" "123047" "123047" "121540" "121540" "120050" "120050" "120050" "120050" "119198" "119198" "119198" "119198" "119198"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Photo" 
+                 [,337]   [,338]   [,339]   [,340]   [,341]   [,342]   [,343]   [,344]   [,345]   [,346]   [,347]   [,348]   [,349]   [,350]  
+Page.total.likes "119198" "119198" "119198" "117764" "117764" "117764" "117764" "117764" "117764" "117764" "117764" "117764" "117764" "117764"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Link"   "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,351]   [,352]   [,353]   [,354]   [,355]   [,356]   [,357]   [,358]   [,359]   [,360]   [,361]   [,362]   [,363]   [,364]  
+Page.total.likes "116435" "116435" "116435" "116435" "116435" "116435" "116435" "116091" "116091" "116091" "116091" "116091" "116091" "115893"
+Type             "Photo"  "Photo"  "Status" "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Photo" 
+                 [,365]   [,366]   [,367]   [,368]   [,369]   [,370]   [,371]   [,372]   [,373]   [,374]   [,375]   [,376]   [,377]   [,378]  
+Page.total.likes "115893" "115368" "115368" "115368" "115368" "113028" "113028" "113028" "113028" "113028" "113028" "111620" "111620" "111620"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Link"   "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,379]   [,380]   [,381]   [,382]   [,383]   [,384]   [,385]   [,386]   [,387]   [,388]   [,389]   [,390]   [,391]   [,392]  
+Page.total.likes "111620" "111620" "111620" "109670" "109670" "109670" "109670" "109670" "109670" "109670" "109670" "109670" "109670" "109670"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,393]   [,394]   [,395]   [,396]   [,397]   [,398]   [,399]   [,400]   [,401]   [,402]   [,403]   [,404]   [,405]   [,406]  
+Page.total.likes "109670" "109670" "107907" "107907" "107907" "107907" "107907" "107907" "107907" "107907" "107907" "107907" "107907" "107907"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Link"   "Photo"  "Photo" 
+                 [,407]   [,408]   [,409]   [,410]   [,411]   [,412]   [,413]   [,414]   [,415]   [,416]   [,417]   [,418]   [,419]   [,420]  
+Page.total.likes "107907" "106928" "106928" "106928" "106928" "106928" "106928" "104070" "104070" "104070" "104070" "104070" "102112" "102112"
+Type             "Photo"  "Photo"  "Link"   "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Status" "Photo"  "Photo"  "Photo" 
+                 [,421]   [,422]   [,423]   [,424]   [,425]   [,426]   [,427]   [,428]   [,429]   [,430]   [,431]   [,432]   [,433]   [,434]  
+Page.total.likes "102112" "102112" "102112" "102112" "102112" "102112" "100732" "100732" "100732" "100732" "100732" "100732" "100732" "100732"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Link"   "Photo"  "Photo"  "Photo"  "Photo"  "Link"   "Photo"  "Photo"  "Photo" 
+                 [,435]   [,436]   [,437]   [,438]   [,439]   [,440]   [,441]   [,442]   [,443]   [,444]   [,445]   [,446]   [,447]   [,448]  
+Page.total.likes "100732" "100732" "100732" "100732" " 98195" " 98195" " 98195" " 98195" " 98195" " 96749" " 96749" " 96749" " 96749" " 96749"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Link"   "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,449]   [,450]   [,451]   [,452]   [,453]   [,454]   [,455]   [,456]   [,457]   [,458]   [,459]   [,460]   [,461]   [,462]  
+Page.total.likes " 96749" " 93684" " 93577" " 93470" " 93363" " 93256" " 93149" " 93042" " 92935" " 92828" " 92721" " 92614" " 92507" " 92400"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,463]   [,464]   [,465]   [,466]   [,467]   [,468]   [,469]   [,470]   [,471]   [,472]   [,473]   [,474]   [,475]   [,476]  
+Page.total.likes " 92293" " 92186" " 92079" " 91972" " 91865" " 91758" " 91651" " 91544" " 91437" " 91330" " 91223" " 91116" " 91009" " 86909"
+Type             "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Link"   "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,477]   [,478]   [,479]   [,480]   [,481]   [,482]   [,483]   [,484]   [,485]   [,486]   [,487]   [,488]   [,489]   [,490]  
+Page.total.likes " 86909" " 86909" " 86909" " 86909" " 86909" " 86491" " 86491" " 86491" " 86491" " 86491" " 85979" " 85979" " 85979" " 85979"
+Type             "Photo"  "Link"   "Photo"  "Photo"  "Photo"  "Link"   "Photo"  "Photo"  "Photo"  "Link"   "Photo"  "Photo"  "Photo"  "Photo" 
+                 [,491]   [,492]   [,493]   [,494]   [,495]   [,496]   [,497]   [,498]   [,499]   [,500]  
+Page.total.likes " 85979" " 85979" " 85979" " 85093" " 85093" " 85093" " 81370" " 81370" " 81370" " 81370"
+Type             "Photo"  "Photo"  "Link"   "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo"  "Photo" 
+ [ reached getOption("max.print") -- omitted 4 rows ]
+> dim(transposedf)
+[1]  19 500
+> 
+> # Melt dataframe
+> meltdf <- melt(data=df, id=c("Type", "Category"))
+> head(meltdf)
+    Type Category         variable  value
+1  Photo        2 Page.total.likes 139441
+2 Status        2 Page.total.likes 139441
+3  Photo        3 Page.total.likes 139441
+4  Photo        2 Page.total.likes 139441
+5  Photo        2 Page.total.likes 139441
+6 Status        2 Page.total.likes 139441
+> dim(meltdf)
+[1] 8500    4
+> 
+> # Cast dataframe
+> castdf <- dcast(data=meltdf, Category~variable, sum)
+> head(castdf)
+  Category Page.total.likes Post.Month Post.Weekday Post.Hour Paid Lifetime.Post.Total.Reach Lifetime.Post.Total.Impressions
+1        1         26447369       1540          918      1847   64                   3939011                         8685000
+2        2         16725054       1041          534       896   NA                   1282535                         2281947
+3        3         18424665        938          623      1177   43                   1730134                         3826027
+  Lifetime.Engaged.Users Lifetime.Post.Consumers Lifetime.Post.Consumptions Lifetime.Post.Impressions.by.people.who.have.liked.your.Page
+1                 182992                  165006                     365329                                                      4561250
+2                 147987                  129005                     189024                                                      1482799
+3                 129193                  105375                     153212                                                      2339139
+  Lifetime.Post.reach.by.people.who.like.your.Page Lifetime.People.who.have.liked.your.Page.and.engaged.with.your.post comment  like share
+1                                          1620584                                                              113317    1248    NA    NA
+2                                           788128                                                              109335    1443 28432  4466
+3                                           884032                                                               82341    1050 33637  5107
+  Total.Interactions
+1              31925
+2              34341
+3              39794
+> dim(castdf)
+[1]  3 18
