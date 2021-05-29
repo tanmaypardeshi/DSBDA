@@ -1,0 +1,63 @@
+library(zoo)
+library(caTools)
+library(e1071)
+library(caret)
+library(class)
+
+getwd()
+setwd('/home/tanmay/Downloads')
+getwd()
+rm(list=ls())
+df<-read.csv("heart.csv",sep=',', header=FALSE)
+
+names <- c("age","sex","cp","trestbps","chol","fbs","restecg","thalach","exang","oldpeak","slope","ca",
+           "thal","num")
+colnames(df) <- names
+names(df)
+str(df)
+dim(df)
+
+# Data Cleaning
+copy<-df
+## Omit NA values
+na.omit(copy)
+summary(copy)
+## Replacing NA values with median
+df$thal<-na.aggregate(df$thal,FUN = median)
+
+#Error Correction
+df$num[df$num>0]<-1
+summary(df$num)
+
+# Transformation 
+df$ca<-as.numeric(df$ca)
+df$thal<-as.numeric(df$thal)
+# Replacing NA values with median
+df$thal<-na.aggregate(df$thal,FUN = median)
+df$ca<-na.aggregate(df$ca,FUN = median)
+
+# Data Model Building
+## Split into train and test
+df[, c(1)] <- sapply(df[, c(1)], as.numeric)
+set.seed(123)
+split = sample.split(df$num, SplitRatio = 2/3)
+train_data = subset(df, split == TRUE)
+test_data = subset(df, split == FALSE)
+dim(train_data)
+dim(test_data)
+
+## Linear Regression
+regressor=lm(formula = num~age, data=train_data)
+plot(train_data$age,train_data$num,col = "blue",main = "Age & Class Regression",abline(regressor,cex = 1.3,pch = 16,xlab = "Class",ylab = "Age"))
+hd_age_predict=predict(regressor, newdata=test_data)
+round_age=hd_age_predict
+rage=round(round_age)
+## Confusion Matrix
+df=confusionMatrix(as.factor(rage),as.factor(test_data$num))
+
+## Multiple Regression
+regressor=lm(formula =num~age+sex+cp+trestbps+chol+fbs+restecg+thalach+exang+oldpeak+slope,data=train_data)
+hd_age_predict=predict(regressor, newdata=test_data)
+round_age=hd_age_predict
+rage=round(round_age)
+df=confusionMatrix(as.factor(rage),as.factor(test_data$num))
